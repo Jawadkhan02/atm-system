@@ -571,6 +571,7 @@ function doDeposit() {
         if (isNaN(amount) || amount <= 0) { showError('Invalid amount.'); return; }
         try {
             const txn = selectedAccount.deposit(amount);
+            refreshInfoPanel();
             render(`
                 <div class="title">Deposit Successful</div>
                 <p>Amount: Rs. ${fmt(amount)}</p>
@@ -641,6 +642,7 @@ function executeWithdraw() {
     try {
         const txn = selectedAccount.withdraw(tempData.withdrawAmount);
         showCashDispensing(tempData.withdrawAmount);
+        refreshInfoPanel();
         setTimeout(() => {
             render(`
                 <div class="title">Withdrawal Successful</div>
@@ -722,6 +724,7 @@ function showTransferConfirm() {
 function executeTransfer() {
     try {
         const [sTxn, rTxn] = selectedAccount.transfer(tempData.transferAmount, tempData.target);
+        refreshInfoPanel();
         render(`
             <div class="title">Transfer Successful</div>
             <p>Amount: Rs. ${fmt(tempData.transferAmount)}</p>
@@ -829,6 +832,42 @@ function showCashDispensing(amount) {
 
 // ==================== INIT ====================
 
+let demoCustomers = [];
+let demoCards = [];
+
+function refreshInfoPanel() {
+    const cards = document.querySelectorAll('.account-card');
+    demoCustomers.forEach((cust, i) => {
+        if (!cards[i]) return;
+        // Clear all dynamic spans (keep only the strong name and first static spans)
+        const existing = cards[i].querySelectorAll('.dynamic-info');
+        existing.forEach(el => el.remove());
+
+        // Add card number
+        if (demoCards[i]) {
+            const cardSpan = document.createElement('span');
+            cardSpan.className = 'dynamic-info';
+            cardSpan.textContent = 'Card: ' + demoCards[i].getCardNumber();
+            cardSpan.style.color = '#00d4ff';
+            cards[i].appendChild(cardSpan);
+        }
+
+        // Add account numbers with live balances
+        cust.getAccountNumbers().forEach(accNum => {
+            const acc = bank.findAccount(accNum);
+            if (acc) {
+                const accSpan = document.createElement('span');
+                accSpan.className = 'dynamic-info';
+                accSpan.textContent = acc.accountType() + ': ' + accNum + ' | Rs. ' + fmt(acc.getBalance());
+                accSpan.style.color = '#ffaa00';
+                accSpan.style.fontSize = '0.8rem';
+                accSpan.style.fontFamily = 'monospace';
+                cards[i].appendChild(accSpan);
+            }
+        });
+    });
+}
+
 function init() {
     bank = new Bank('National Bank of Pakistan');
 
@@ -841,41 +880,13 @@ function init() {
     bank.createAccount(sara.getCustomerId(), 'SAVINGS', '4321', 50000);
     bank.createAccount(usman.getCustomerId(), 'CURRENT', '8765', 200000);
 
-    const cardAli = bank.issueCard(ali.getCustomerId(), '1234');
-    const cardSara = bank.issueCard(sara.getCustomerId(), '4321');
-    const cardUsman = bank.issueCard(usman.getCustomerId(), '8765');
+    demoCards[0] = bank.issueCard(ali.getCustomerId(), '1234');
+    demoCards[1] = bank.issueCard(sara.getCustomerId(), '4321');
+    demoCards[2] = bank.issueCard(usman.getCustomerId(), '8765');
 
-    // Gather all accounts for display
-    const aliAccs = ali.getAccountNumbers();
-    const saraAccs = sara.getAccountNumbers();
-    const usmanAccs = usman.getAccountNumbers();
+    demoCustomers = [ali, sara, usman];
 
-    // Update info panel with actual card numbers and account numbers
-    const cards = document.querySelectorAll('.account-card');
-    const cardNums = [cardAli, cardSara, cardUsman];
-    const allAccNums = [aliAccs, saraAccs, usmanAccs];
-
-    cards.forEach((card, i) => {
-        // Add card number
-        const cardSpan = document.createElement('span');
-        cardSpan.textContent = 'Card: ' + cardNums[i].getCardNumber();
-        cardSpan.style.color = '#00d4ff';
-        card.insertBefore(cardSpan, card.children[1]);
-
-        // Add account numbers
-        allAccNums[i].forEach(accNum => {
-            const acc = bank.findAccount(accNum);
-            if (acc) {
-                const accSpan = document.createElement('span');
-                accSpan.textContent = acc.accountType() + ': ' + accNum;
-                accSpan.style.color = '#ffaa00';
-                accSpan.style.fontSize = '0.8rem';
-                accSpan.style.fontFamily = 'monospace';
-                card.appendChild(accSpan);
-            }
-        });
-    });
-
+    refreshInfoPanel();
     showWelcome();
 }
 
