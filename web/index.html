@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATM System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="page">
+        <header>
+            <h1>ATM System</h1>
+            <p>OOP Assignment - C++ to JavaScript</p>
+        </header>
+
+        <div class="atm-machine">
+            <div class="atm-top">
+                <div class="screen-bezel">
+                    <div id="screen" class="screen">
+                        <!-- Dynamic content rendered here -->
+                    </div>
+                </div>
+            </div>
+            <div class="atm-bottom">
+                <div class="keypad" id="keypad">
+                    <div class="keypad-row">
+                        <button class="key" data-value="1">1</button>
+                        <button class="key" data-value="2">2</button>
+                        <button class="key" data-value="3">3</button>
+                    </div>
+                    <div class="keypad-row">
+                        <button class="key" data-value="4">4</button>
+                        <button class="key" data-value="5">5</button>
+                        <button class="key" data-value="6">6</button>
+                    </div>
+                    <div class="keypad-row">
+                        <button class="key" data-value="7">7</button>
+                        <button class="key" data-value="8">8</button>
+                        <button class="key" data-value="9">9</button>
+                    </div>
+                    <div class="keypad-row">
+                        <button class="key" data-value="clear">CLR</button>
+                        <button class="key" data-value="0">0</button>
+                        <button class="key" data-value="enter">ENT</button>
+                    </div>
+                </div>
+                <div class="slot-area">
+                    <div class="card-slot" id="cardSlot">
+                        <span>INSERT CARD</span>
+                    </div>
+                    <div class="cash-slot" id="cashSlot"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <h2>Demo Accounts</h2>
+            <div class="accounts-grid">
+                <div class="account-card">
+                    <strong>Ali Khan</strong>
+                    <span>PIN: 1234</span>
+                    <span>Savings: Rs. 75,000</span>
+                    <span>Current: Rs. 150,000</span>
+                </div>
+                <div class="account-card">
+                    <strong>Sara Ahmed</strong>
+                    <span>PIN: 4321</span>
+                    <span>Savings: Rs. 50,000</span>
+                </div>
+                <div class="account-card">
+                    <strong>Usman Ali</strong>
+                    <span>PIN: 8765</span>
+                    <span>Current: Rs. 200,000</span>
+                </div>
+            </div>
+            <p class="hint">Click <strong>INSERT CARD</strong> to start</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

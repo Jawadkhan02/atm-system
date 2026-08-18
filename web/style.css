@@ -1,0 +1,365 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #1a1a2e;
+    color: #e0e0e0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+}
+
+.page {
+    max-width: 900px;
+    width: 100%;
+}
+
+header {
+    text-align: center;
+    padding: 20px 0;
+}
+
+header h1 {
+    font-size: 2rem;
+    color: #00d4ff;
+    letter-spacing: 2px;
+}
+
+header p {
+    color: #888;
+    font-size: 0.9rem;
+    margin-top: 4px;
+}
+
+/* ATM Machine */
+.atm-machine {
+    background: linear-gradient(145deg, #2d2d44, #1f1f33);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    border: 1px solid #3a3a55;
+}
+
+/* Screen */
+.screen-bezel {
+    background: #111;
+    border-radius: 12px;
+    padding: 8px;
+    border: 2px solid #333;
+}
+
+.screen {
+    background: #0a1628;
+    border-radius: 8px;
+    min-height: 380px;
+    padding: 20px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #00ff88;
+    overflow-y: auto;
+    max-height: 380px;
+}
+
+.screen .title {
+    color: #00d4ff;
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+    border-bottom: 1px solid #1a3a2a;
+    padding-bottom: 8px;
+}
+
+.screen .info {
+    color: #aaa;
+}
+
+.screen .success {
+    color: #00ff88;
+}
+
+.screen .error {
+    color: #ff4444;
+}
+
+.screen .warning {
+    color: #ffaa00;
+}
+
+.screen .highlight {
+    color: #ffdd00;
+    font-weight: bold;
+}
+
+.screen .dim {
+    color: #555;
+}
+
+.screen .center {
+    text-align: center;
+}
+
+.screen .divider {
+    border: none;
+    border-top: 1px dashed #1a3a2a;
+    margin: 10px 0;
+}
+
+.screen .menu-item {
+    padding: 6px 0;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.screen .menu-item:hover {
+    color: #00d4ff;
+}
+
+.screen .btn {
+    display: inline-block;
+    padding: 8px 20px;
+    margin: 8px 4px;
+    background: #003d2a;
+    color: #00ff88;
+    border: 1px solid #00ff88;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.screen .btn:hover {
+    background: #00ff88;
+    color: #111;
+}
+
+.screen .btn.danger {
+    background: #3d0000;
+    color: #ff4444;
+    border-color: #ff4444;
+}
+
+.screen .btn.danger:hover {
+    background: #ff4444;
+    color: #fff;
+}
+
+.screen .btn.primary {
+    background: #002d55;
+    color: #00d4ff;
+    border-color: #00d4ff;
+}
+
+.screen .btn.primary:hover {
+    background: #00d4ff;
+    color: #111;
+}
+
+.screen .input-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 0;
+}
+
+.screen .input-display {
+    background: #0d1f15;
+    border: 1px solid #1a3a2a;
+    padding: 6px 12px;
+    border-radius: 4px;
+    min-width: 200px;
+    letter-spacing: 3px;
+    font-size: 1.1rem;
+    color: #00ff88;
+}
+
+/* Keypad */
+.atm-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    gap: 20px;
+}
+
+.keypad {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.keypad-row {
+    display: flex;
+    gap: 6px;
+}
+
+.key {
+    width: 60px;
+    height: 48px;
+    background: linear-gradient(145deg, #3a3a55, #2a2a40);
+    color: #ddd;
+    border: 1px solid #4a4a65;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.key:hover {
+    background: linear-gradient(145deg, #4a4a65, #3a3a55);
+    border-color: #00d4ff;
+}
+
+.key:active {
+    transform: scale(0.95);
+    background: #00d4ff;
+    color: #111;
+}
+
+/* Card & Cash Slots */
+.slot-area {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+}
+
+.card-slot {
+    width: 200px;
+    height: 50px;
+    background: linear-gradient(145deg, #222, #1a1a1a);
+    border: 2px dashed #444;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.85rem;
+    color: #888;
+    letter-spacing: 1px;
+}
+
+.card-slot:hover {
+    border-color: #00d4ff;
+    color: #00d4ff;
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+}
+
+.card-slot.inserted {
+    border-style: solid;
+    border-color: #00ff88;
+    background: linear-gradient(145deg, #003d2a, #002a1e);
+    color: #00ff88;
+}
+
+.cash-slot {
+    width: 200px;
+    height: 30px;
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    color: #555;
+    transition: all 0.3s;
+}
+
+.cash-slot.dispensing {
+    border-color: #ffaa00;
+    color: #ffaa00;
+    animation: blink 0.5s infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0.5; }
+}
+
+/* Info Panel */
+.info-panel {
+    margin-top: 30px;
+    background: linear-gradient(145deg, #2d2d44, #1f1f33);
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid #3a3a55;
+}
+
+.info-panel h2 {
+    color: #00d4ff;
+    margin-bottom: 16px;
+    font-size: 1.2rem;
+}
+
+.accounts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+.account-card {
+    background: #1a1a2e;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.account-card strong {
+    color: #00d4ff;
+    font-size: 1rem;
+    margin-bottom: 4px;
+}
+
+.account-card span {
+    color: #aaa;
+    font-size: 0.85rem;
+}
+
+.hint {
+    margin-top: 16px;
+    color: #888;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+/* Table in mini statement */
+.stmt-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+    margin: 8px 0;
+}
+
+.stmt-table th {
+    color: #00d4ff;
+    text-align: left;
+    padding: 4px 6px;
+    border-bottom: 1px solid #1a3a2a;
+}
+
+.stmt-table td {
+    padding: 4px 6px;
+    border-bottom: 1px solid #0d1f15;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .atm-machine { padding: 16px; }
+    .screen { min-height: 320px; padding: 14px; font-size: 0.85rem; }
+    .key { width: 50px; height: 42px; font-size: 1rem; }
+    .card-slot { width: 160px; }
+    .accounts-grid { grid-template-columns: 1fr; }
+}
