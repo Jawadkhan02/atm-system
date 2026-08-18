@@ -764,14 +764,35 @@ function init() {
     const cardSara = bank.issueCard(sara.getCustomerId(), '4321');
     const cardUsman = bank.issueCard(usman.getCustomerId(), '8765');
 
-    // Update info panel with actual card numbers
+    // Gather all accounts for display
+    const aliAccs = ali.getAccountNumbers();
+    const saraAccs = sara.getAccountNumbers();
+    const usmanAccs = usman.getAccountNumbers();
+
+    // Update info panel with actual card numbers and account numbers
     const cards = document.querySelectorAll('.account-card');
     const cardNums = [cardAli, cardSara, cardUsman];
+    const allAccNums = [aliAccs, saraAccs, usmanAccs];
+
     cards.forEach((card, i) => {
-        const numSpan = document.createElement('span');
-        numSpan.textContent = 'Card: ' + cardNums[i].getCardNumber();
-        numSpan.style.color = '#00d4ff';
-        card.insertBefore(numSpan, card.children[1]);
+        // Add card number
+        const cardSpan = document.createElement('span');
+        cardSpan.textContent = 'Card: ' + cardNums[i].getCardNumber();
+        cardSpan.style.color = '#00d4ff';
+        card.insertBefore(cardSpan, card.children[1]);
+
+        // Add account numbers
+        allAccNums[i].forEach(accNum => {
+            const acc = bank.findAccount(accNum);
+            if (acc) {
+                const accSpan = document.createElement('span');
+                accSpan.textContent = acc.accountType() + ': ' + accNum;
+                accSpan.style.color = '#ffaa00';
+                accSpan.style.fontSize = '0.8rem';
+                accSpan.style.fontFamily = 'monospace';
+                card.appendChild(accSpan);
+            }
+        });
     });
 
     showWelcome();
