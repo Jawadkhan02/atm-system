@@ -275,9 +275,3 @@ test.exe
 - Current account overdraft
 - PIN change validation
 - Minimum withdrawal limits
-
----
-
-## License
-
-This project is for educational purposes.
