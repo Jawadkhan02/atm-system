@@ -375,15 +375,22 @@ let tempData = {};
 
 function fmt(n) { return n.toLocaleString('en-PK'); }
 
-function render(html) { screen.innerHTML = html; }
+function render(html) {
+    screen.style.animation = 'none';
+    screen.offsetHeight;
+    screen.innerHTML = html;
+    screen.style.animation = 'screenOn 0.35s ease-out';
+}
 
 function showWelcome() {
     render(`
-        <div class="title">ATM System</div>
-        <div class="center" style="margin-top:60px">
-            <div style="font-size:2rem;margin-bottom:20px">ATM</div>
-            <p class="info">Insert your card to begin</p>
-            <p class="dim" style="margin-top:40px">Card numbers are generated at runtime.<br>Check the info panel below for demo credentials.</p>
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:220px">
+            <div style="font-size:2rem;margin-bottom:12px;animation:float 3s ease-in-out infinite">🏦</div>
+            <div class="title" style="border:none;padding:0;margin-bottom:4px">ATM System</div>
+            <p class="dim" style="margin-top:10px;font-size:0.7rem">Insert your card to begin</p>
+            <p class="dim" style="margin-top:36px;font-size:0.62rem;text-align:center;line-height:1.5">
+                Card numbers are generated at runtime.<br>Check demo accounts below.
+            </p>
         </div>
     `);
 }
@@ -392,13 +399,14 @@ function promptInput(placeholder, mode, callback) {
     inputBuffer = '';
     inputMode = mode;
     inputCallback = callback;
+    const masked = (mode === 'pin' || mode === 'newPin' || mode === 'confirmPin' || mode === 'oldPin') ? '****' : '';
     render(`
-        <div class="title">ATM System</div>
-        <p style="margin-bottom:12px">${placeholder}</p>
-        <div class="input-line">
-            <div class="input-display" id="inputDisplay">${mode === 'pin' || mode === 'newPin' || mode === 'confirmPin' || mode === 'oldPin' ? '****' : ''}</div>
+        <div class="title">ATM</div>
+        <p style="text-align:center;font-size:0.8rem;margin-bottom:10px">${placeholder}</p>
+        <div class="input-line" style="justify-content:center">
+            <div class="input-display" id="inputDisplay">${masked}</div>
         </div>
-        <p class="dim" style="margin-top:12px">Use keypad or keyboard</p>
+        <p class="dim" style="text-align:center;margin-top:12px;font-size:0.65rem">Use keypad or keyboard</p>
     `);
 }
 
@@ -464,17 +472,21 @@ function startSession() {
         const [card, cust] = bank.getCustomerByCard(cardNum);
         if (!card) {
             render(`
-                <div class="title">ATM System</div>
-                <p class="error" style="margin-top:40px;text-align:center">Card not recognized.<br>Please try again.</p>
-                <div class="center" style="margin-top:30px"><button class="btn" onclick="showWelcome()">Back</button></div>
+                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:160px">
+                    <div style="font-size:2rem;margin-bottom:10px;animation:scaleIn 0.3s ease-out">❌</div>
+                    <p class="error" style="font-weight:600;font-size:0.85rem">Card not recognized.</p>
+                    <div style="margin-top:18px"><button class="btn" onclick="showWelcome()">Back</button></div>
+                </div>
             `);
             return;
         }
         if (!card.isActive()) {
             render(`
-                <div class="title">ATM System</div>
-                <p class="error" style="margin-top:40px;text-align:center">This card has been BLOCKED.<br>Please contact your bank.</p>
-                <div class="center" style="margin-top:30px"><button class="btn" onclick="showWelcome()">Back</button></div>
+                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:160px">
+                    <div style="font-size:2rem;margin-bottom:10px;animation:scaleIn 0.3s ease-out">🔒</div>
+                    <p class="error" style="font-weight:600;font-size:0.85rem">Card BLOCKED.</p>
+                    <div style="margin-top:18px"><button class="btn" onclick="showWelcome()">Back</button></div>
+                </div>
             `);
             return;
         }
@@ -487,26 +499,33 @@ function startSession() {
 }
 
 function promptPin(attemptsLeft) {
-    promptInput(`Enter PIN (${attemptsLeft} attempt${attemptsLeft > 1 ? 's' : ''} remaining):`, 'pin', (pin) => {
+    promptInput(`PIN (${attemptsLeft} left):`, 'pin', (pin) => {
         if (currentCard.validatePin(pin)) {
             render(`
-                <div class="title">ATM System</div>
-                <p class="success" style="margin-top:40px;text-align:center">PIN validated successfully!</p>
-                <p style="margin-top:12px;text-align:center">Welcome, ${currentCustomer.getName()}!</p>
+                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:160px">
+                    <div style="font-size:2rem;margin-bottom:10px;animation:scaleIn 0.3s ease-out">✅</div>
+                    <p class="success" style="font-weight:600;font-size:0.85rem">PIN validated!</p>
+                    <p style="margin-top:6px;color:#aaa;font-size:0.75rem">Welcome, ${currentCustomer.getName()}</p>
+                </div>
             `);
             setTimeout(() => selectAccount(), 1000);
         } else {
             if (!currentCard.isActive()) {
                 render(`
-                    <div class="title">ATM System</div>
-                    <p class="error" style="margin-top:40px;text-align:center">Incorrect PIN. Card BLOCKED after 3 failed attempts.</p>
-                    <div class="center" style="margin-top:30px"><button class="btn" onclick="ejectAndReset()">OK</button></div>
+                    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:160px">
+                        <div style="font-size:2rem;margin-bottom:10px;animation:scaleIn 0.3s ease-out">🔒</div>
+                        <p class="error" style="font-weight:600;font-size:0.85rem">Card BLOCKED (3 wrong PINs)</p>
+                        <div style="margin-top:18px"><button class="btn" onclick="ejectAndReset()">OK</button></div>
+                    </div>
                 `);
             } else {
                 render(`
-                    <div class="title">ATM System</div>
-                    <p class="warning" style="margin-top:40px;text-align:center">Incorrect PIN. ${attemptsLeft - 1} attempt(s) remaining.</p>
-                    <div class="center" style="margin-top:30px"><button class="btn primary" onclick="promptPin(${attemptsLeft - 1})">Try Again</button></div>
+                    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:160px">
+                        <div style="font-size:2rem;margin-bottom:10px;animation:scaleIn 0.3s ease-out">⚠️</div>
+                        <p class="warning" style="font-weight:600;font-size:0.85rem">Wrong PIN.</p>
+                        <p class="dim" style="margin-top:4px;font-size:0.7rem">${attemptsLeft - 1} left</p>
+                        <div style="margin-top:18px"><button class="btn primary" onclick="promptPin(${attemptsLeft - 1})">Try Again</button></div>
+                    </div>
                 `);
             }
         }
@@ -524,10 +543,10 @@ function selectAccount() {
     accNums.forEach((num, i) => {
         const acc = bank.findAccount(num);
         if (acc) {
-            html += `<p class="menu-item" onclick="pickAccount('${num}')">${i + 1}. ${acc.accountType()} | ${num} | Rs. ${fmt(acc.getBalance())}</p>`;
+            html += `<p class="menu-item" onclick="pickAccount('${num}')" style="font-size:0.75rem">${i + 1}. ${acc.accountType()} | Rs. ${fmt(acc.getBalance())}</p>`;
         }
     });
-    html += `<p class="menu-item error" onclick="ejectAndReset()">${accNums.length + 1}. Cancel</p>`;
+    html += `<p class="menu-item" style="color:#f87171;font-size:0.75rem" onclick="ejectAndReset()">Cancel</p>`;
     render(html);
 }
 
@@ -538,16 +557,15 @@ function pickAccount(accNum) {
 
 function showMenu() {
     render(`
-        <div class="title">ATM Menu</div>
-        <p class="info">Account: ${selectedAccount.getAccountNumber()}</p>
-        <hr class="divider">
-        <p class="menu-item" onclick="doCheckBalance()">1. Check Balance</p>
-        <p class="menu-item" onclick="doDeposit()">2. Deposit</p>
-        <p class="menu-item" onclick="doWithdraw()">3. Withdraw</p>
-        <p class="menu-item" onclick="doTransfer()">4. Transfer Money</p>
-        <p class="menu-item" onclick="doChangePin()">5. Change PIN</p>
-        <p class="menu-item" onclick="doMiniStatement()">6. Mini Statement</p>
-        <p class="menu-item error" onclick="ejectCard()">7. Exit</p>
+        <div class="title">Menu</div>
+        <p class="dim" style="text-align:center;font-size:0.68rem;margin-bottom:8px">${selectedAccount.accountType()} | Rs. ${fmt(selectedAccount.getBalance())}</p>
+        <p class="menu-item" onclick="doCheckBalance()">💰 Check Balance</p>
+        <p class="menu-item" onclick="doDeposit()">💵 Deposit</p>
+        <p class="menu-item" onclick="doWithdraw()">💸 Withdraw</p>
+        <p class="menu-item" onclick="doTransfer()">🔄 Transfer</p>
+        <p class="menu-item" onclick="doChangePin()">🔑 Change PIN</p>
+        <p class="menu-item" onclick="doMiniStatement()">📄 Statement</p>
+        <p class="menu-item" style="color:#f87171" onclick="ejectCard()">❌ Exit</p>
     `);
 }
 
@@ -555,30 +573,32 @@ function showMenu() {
 
 function doCheckBalance() {
     render(`
-        <div class="title">Check Balance</div>
-        <p>Account: ${selectedAccount.getAccountNumber()}</p>
-        <p>Type: ${selectedAccount.accountType()}</p>
+        <div class="title">Balance</div>
+        <p class="dim" style="text-align:center;font-size:0.7rem">${selectedAccount.getAccountNumber()} (${selectedAccount.accountType()})</p>
+        <div style="text-align:center;margin:14px 0">
+            <p style="font-size:1.3rem;font-weight:700;color:var(--green-light)">Rs. ${fmt(selectedAccount.getBalance())}</p>
+        </div>
         <hr class="divider">
-        <p style="font-size:1.4rem;margin-top:10px">Balance: <span class="highlight">Rs. ${fmt(selectedAccount.getBalance())}</span></p>
-        <hr class="divider">
-        <div style="margin-top:16px"><button class="btn" onclick="showMenu()">Back to Menu</button></div>
+        <div style="text-align:center"><button class="btn" onclick="showMenu()">Menu</button></div>
     `);
 }
 
 function doDeposit() {
-    promptInput('Enter deposit amount (Rs.):', 'amount', (val) => {
+    promptInput('Deposit amount (Rs.):', 'amount', (val) => {
         const amount = parseFloat(val);
         if (isNaN(amount) || amount <= 0) { showError('Invalid amount.'); return; }
         try {
             const txn = selectedAccount.deposit(amount);
             refreshInfoPanel();
             render(`
-                <div class="title">Deposit Successful</div>
-                <p>Amount: Rs. ${fmt(amount)}</p>
-                <p>Transaction ID: ${txn.getTransactionId()}</p>
-                <p>New Balance: <span class="highlight">Rs. ${fmt(selectedAccount.getBalance())}</span></p>
-                <hr class="divider">
-                <div style="margin-top:16px"><button class="btn" onclick="showMenu()">Back to Menu</button></div>
+                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:160px">
+                    <div style="font-size:2rem;margin-bottom:10px;animation:scaleIn 0.3s ease-out">✅</div>
+                    <p class="title" style="border:none;padding:0;font-size:0.85rem">Deposit Successful</p>
+                    <p style="margin-top:8px;font-size:0.8rem">Rs. ${fmt(amount)}</p>
+                    <p class="dim" style="margin-top:4px;font-size:0.68rem">TXN: ${txn.getTransactionId()}</p>
+                    <p style="margin-top:10px;font-size:0.9rem;font-weight:600;color:var(--green-light)">Rs. ${fmt(selectedAccount.getBalance())}</p>
+                    <div style="margin-top:18px"><button class="btn" onclick="showMenu()">Menu</button></div>
+                </div>
             `);
         } catch (e) { showError(e.message); }
     });
@@ -587,13 +607,13 @@ function doDeposit() {
 function doWithdraw() {
     render(`
         <div class="title">Withdraw</div>
-        <p class="info">ATM Cash Available: Rs. ${fmt(getAtmCash())}</p>
+        <p class="dim" style="text-align:center;font-size:0.7rem">ATM Cash: Rs. ${fmt(getAtmCash())}</p>
         <hr class="divider">
-        <p>Enter withdrawal amount (Rs.):</p>
-        <div class="input-line">
+        <p style="text-align:center;font-size:0.78rem">Amount (Rs.):</p>
+        <div class="input-line" style="justify-content:center">
             <div class="input-display" id="inputDisplay"></div>
         </div>
-        <p class="dim" style="margin-top:8px">Use keypad or keyboard</p>
+        <p class="dim" style="text-align:center;margin-top:10px;font-size:0.65rem">Use keypad or keyboard</p>
     `);
     inputBuffer = '';
     inputMode = 'amount';
@@ -627,12 +647,13 @@ function showWithdrawConfirm() {
     render(`
         <div class="title">Confirm Withdrawal</div>
         <hr class="divider">
-        <p>Amount: Rs. ${fmt(amount)}</p>
-        <p>Fee:    Rs. ${fmt(fee)}</p>
-        <p style="margin-top:8px;font-size:1.1rem">Total Deducted: <span class="highlight">Rs. ${fmt(total)}</span></p>
+        <div style="text-align:center;margin:8px 0">
+            <p style="font-size:1.1rem;font-weight:600;color:var(--green-light)">Rs. ${fmt(amount)}</p>
+            <p class="dim" style="font-size:0.68rem">Fee: Rs. ${fmt(fee)} | Total: Rs. ${fmt(total)}</p>
+        </div>
         <hr class="divider">
-        <div style="margin-top:16px">
-            <button class="btn" onclick="executeWithdraw()">Confirm</button>
+        <div style="text-align:center;margin-top:10px">
+            <button class="btn primary" onclick="executeWithdraw()">Confirm</button>
             <button class="btn danger" onclick="showMenu()">Cancel</button>
         </div>
     `);
@@ -645,34 +666,35 @@ function executeWithdraw() {
         refreshInfoPanel();
         setTimeout(() => {
             render(`
-                <div class="title">Withdrawal Successful</div>
-                <p>Amount: Rs. ${fmt(tempData.withdrawAmount)}</p>
-                <p>Fee: Rs. ${fmt(tempData.withdrawFee)}</p>
-                <p>Transaction ID: ${txn.getTransactionId()}</p>
-                <p>New Balance: <span class="highlight">Rs. ${fmt(selectedAccount.getBalance())}</span></p>
-                <hr class="divider">
-                <div style="margin-top:16px"><button class="btn" onclick="showMenu()">Back to Menu</button></div>
+                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:160px">
+                    <div style="font-size:2rem;margin-bottom:10px;animation:cashSlide 0.4s ease-out">💰</div>
+                    <p class="title" style="border:none;padding:0;font-size:0.85rem">Cash Dispensed</p>
+                    <p style="margin-top:8px;font-size:0.8rem">Rs. ${fmt(tempData.withdrawAmount)}</p>
+                    <p class="dim" style="margin-top:4px;font-size:0.68rem">Fee: Rs. ${fmt(tempData.withdrawFee)}</p>
+                    <p style="margin-top:10px;font-size:0.9rem;font-weight:600;color:var(--green-light)">Rs. ${fmt(selectedAccount.getBalance())}</p>
+                    <div style="margin-top:18px"><button class="btn" onclick="showMenu()">Menu</button></div>
+                </div>
             `);
         }, 2000);
     } catch (e) { showError(e.message); }
 }
 
 function doTransfer() {
-    promptInput("Enter receiver's account number:", 'targetAcc', (targetNum) => {
+    promptInput("Receiver's account #:", 'targetAcc', (targetNum) => {
         const target = bank.findAccount(targetNum);
         if (!target) { showError('Account not found.'); return; }
-        if (selectedAccount.getAccountNumber() === targetNum) { showError('Cannot transfer to the same account.'); return; }
+        if (selectedAccount.getAccountNumber() === targetNum) { showError('Same account.'); return; }
         tempData.target = target;
         render(`
-            <div class="title">Transfer Money</div>
-            <p class="success">Receiver: ${target.getAccountHolder()}</p>
-            <p>Account: ${target.getAccountNumber()} (${target.accountType()})</p>
+            <div class="title">Transfer</div>
+            <p class="success" style="text-align:center;font-size:0.8rem">${target.getAccountHolder()}</p>
+            <p class="dim" style="text-align:center;font-size:0.68rem">${target.getAccountNumber()} (${target.accountType()})</p>
             <hr class="divider">
-            <p>Enter transfer amount (Rs.):</p>
-            <div class="input-line">
+            <p style="text-align:center;font-size:0.78rem">Amount (Rs.):</p>
+            <div class="input-line" style="justify-content:center">
                 <div class="input-display" id="inputDisplay"></div>
             </div>
-            <p class="dim" style="margin-top:8px">Use keypad or keyboard</p>
+            <p class="dim" style="text-align:center;margin-top:10px;font-size:0.65rem">Use keypad or keyboard</p>
         `);
         inputBuffer = '';
         inputMode = 'amount';
@@ -707,15 +729,16 @@ function showTransferConfirm() {
     const target = tempData.target;
     render(`
         <div class="title">Confirm Transfer</div>
-        <p>Receiver: <span class="success">${target.getAccountHolder()}</span></p>
-        <p>Account: ${target.getAccountNumber()} (${target.accountType()})</p>
+        <p class="success" style="text-align:center;font-size:0.82rem">${target.getAccountHolder()}</p>
+        <p class="dim" style="text-align:center;font-size:0.68rem">${target.getAccountNumber()} (${target.accountType()})</p>
         <hr class="divider">
-        <p>Amount: Rs. ${fmt(amount)}</p>
-        <p>Fee:    Rs. ${fmt(fee)}</p>
-        <p style="margin-top:8px;font-size:1.1rem">Total Deducted: <span class="highlight">Rs. ${fmt(total)}</span></p>
+        <div style="text-align:center;margin:8px 0">
+            <p style="font-size:1.1rem;font-weight:600;color:var(--green-light)">Rs. ${fmt(amount)}</p>
+            <p class="dim" style="font-size:0.68rem">Fee: Rs. ${fmt(fee)} | Total: Rs. ${fmt(total)}</p>
+        </div>
         <hr class="divider">
-        <div style="margin-top:16px">
-            <button class="btn" onclick="executeTransfer()">Confirm</button>
+        <div style="text-align:center;margin-top:10px">
+            <button class="btn primary" onclick="executeTransfer()">Confirm</button>
             <button class="btn danger" onclick="showMenu()">Cancel</button>
         </div>
     `);
@@ -726,34 +749,34 @@ function executeTransfer() {
         const [sTxn, rTxn] = selectedAccount.transfer(tempData.transferAmount, tempData.target);
         refreshInfoPanel();
         render(`
-            <div class="title">Transfer Successful</div>
-            <p>Amount: Rs. ${fmt(tempData.transferAmount)}</p>
-            <p>Fee: Rs. ${fmt(tempData.transferFee)}</p>
-            <p>From: ${selectedAccount.getAccountNumber()}</p>
-            <p>To: ${tempData.target.getAccountNumber()}</p>
-            <p>TXN (Sender): ${sTxn.getTransactionId()}</p>
-            <p>TXN (Receiver): ${rTxn.getTransactionId()}</p>
-            <p>Your New Balance: <span class="highlight">Rs. ${fmt(selectedAccount.getBalance())}</span></p>
-            <hr class="divider">
-            <div style="margin-top:16px"><button class="btn" onclick="showMenu()">Back to Menu</button></div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:160px">
+                <div style="font-size:2rem;margin-bottom:10px;animation:scaleIn 0.3s ease-out">🚀</div>
+                <p class="title" style="border:none;padding:0;font-size:0.85rem">Transfer Sent!</p>
+                <p style="margin-top:8px;font-size:0.8rem">Rs. ${fmt(tempData.transferAmount)}</p>
+                <p class="dim" style="margin-top:4px;font-size:0.68rem">Fee: Rs. ${fmt(tempData.transferFee)}</p>
+                <p class="dim" style="font-size:0.65rem">To: ${tempData.target.getAccountNumber()}</p>
+                <p style="margin-top:10px;font-size:0.9rem;font-weight:600;color:var(--green-light)">Rs. ${fmt(selectedAccount.getBalance())}</p>
+                <div style="margin-top:18px"><button class="btn" onclick="showMenu()">Menu</button></div>
+            </div>
         `);
     } catch (e) { showError(e.message); }
 }
 
 function doChangePin() {
-    promptInput('Enter current PIN:', 'oldPin', (oldPin) => {
-        promptInput('Enter new PIN (4-6 digits):', 'newPin', (newPin) => {
+    promptInput('Current PIN:', 'oldPin', (oldPin) => {
+        promptInput('New PIN (4-6):', 'newPin', (newPin) => {
             if (newPin.length < 4 || newPin.length > 6) { showError('PIN must be 4-6 digits.'); return; }
             if (!/^\d+$/.test(newPin)) { showError('PIN must contain only digits.'); return; }
-            promptInput('Confirm new PIN:', 'confirmPin', (confirmPin) => {
-                if (newPin !== confirmPin) { showError('PINs do not match.'); return; }
-                if (selectedAccount.changePin(oldPin, newPin)) {
+            promptInput('Confirm PIN:', 'confirmPin', (confirmPin) => {
+                if (newPin !== confirmPin) { showError('PINs do not match.'); return; }                if (selectedAccount.changePin(oldPin, newPin)) {
                     currentCard.changePin(oldPin, newPin);
                     render(`
-                        <div class="title">PIN Changed</div>
-                        <p class="success" style="text-align:center;margin-top:20px">PIN changed successfully!</p>
-                        <p class="info" style="text-align:center">Card PIN and Account PIN both updated.</p>
-                        <div style="margin-top:20px;text-align:center"><button class="btn" onclick="showMenu()">Back to Menu</button></div>
+                        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:160px">
+                            <div style="font-size:2rem;margin-bottom:10px;animation:scaleIn 0.3s ease-out">🔐</div>
+                            <p class="title" style="border:none;padding:0;font-size:0.85rem">PIN Changed!</p>
+                            <p class="success" style="margin-top:8px;font-size:0.75rem">Both card & account updated</p>
+                            <div style="margin-top:18px"><button class="btn" onclick="showMenu()">Menu</button></div>
+                        </div>
                     `);
                 } else {
                     showError('Incorrect current PIN.');
@@ -767,20 +790,20 @@ function doMiniStatement() {
     const txns = selectedAccount.getMiniStatement(5);
     let rows = '';
     txns.forEach(t => {
-        rows += `<tr><td>${t.getTransactionId()}</td><td>${t.getFormattedDate()}</td><td>${t.transactionType()}</td><td>${t.displayAmount()}</td></tr>`;
+        const isCredit = t._isSender === false || t.transactionType() === 'DEPOSIT';
+        const clr = isCredit ? 'color:var(--green-light)' : 'color:#f87171';
+        rows += `<tr><td style="font-size:0.62rem">${t.getTransactionId()}</td><td>${t.getFormattedDate()}</td><td>${t.transactionType()}</td><td style="${clr};font-weight:500;text-align:right">${t.displayAmount()}</td></tr>`;
     });
     render(`
         <div class="title">Mini Statement</div>
-        <p>Account: ${selectedAccount.getAccountNumber()}</p>
-        <p>Type: ${selectedAccount.accountType()}</p>
-        <hr class="divider">
+        <p class="dim" style="text-align:center;font-size:0.68rem">${selectedAccount.getAccountNumber()} (${selectedAccount.accountType()})</p>
         <table class="stmt-table">
-            <tr><th>TXN ID</th><th>Date</th><th>Type</th><th>Amount</th></tr>
-            ${rows || '<tr><td colspan="4" class="info">No transactions found.</td></tr>'}
+            <tr><th>ID</th><th>Date</th><th>Type</th><th style="text-align:right">Amt</th></tr>
+            ${rows || '<tr><td colspan="4" class="dim" style="text-align:center;padding:16px">No transactions yet.</td></tr>'}
         </table>
         <hr class="divider">
-        <p>Current Balance: <span class="highlight">Rs. ${fmt(selectedAccount.getBalance())}</span></p>
-        <div style="margin-top:16px"><button class="btn" onclick="showMenu()">Back to Menu</button></div>
+        <p style="text-align:center;font-size:0.85rem;font-weight:600;color:var(--green-light)">Rs. ${fmt(selectedAccount.getBalance())}</p>
+        <div style="text-align:center;margin-top:10px"><button class="btn" onclick="showMenu()">Menu</button></div>
     `);
 }
 
@@ -788,17 +811,21 @@ function doMiniStatement() {
 
 function showError(msg) {
     render(`
-        <div class="title">Error</div>
-        <p class="error" style="margin-top:30px;text-align:center">${msg}</p>
-        <div class="center" style="margin-top:30px"><button class="btn primary" onclick="showMenu()">Back to Menu</button></div>
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:160px">
+            <div style="font-size:2rem;margin-bottom:10px;animation:scaleIn 0.3s ease-out">❌</div>
+            <p class="error" style="font-weight:600;font-size:0.82rem;text-align:center">${msg}</p>
+            <div style="margin-top:18px"><button class="btn primary" onclick="showMenu()">Menu</button></div>
+        </div>
     `);
 }
 
 function ejectCard() {
     render(`
-        <div class="title">Thank You</div>
-        <p class="success" style="text-align:center;margin-top:40px">Thank you for using the ATM!</p>
-        <p class="info" style="text-align:center">Please take your card. Goodbye!</p>
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:200px">
+            <div style="font-size:2rem;margin-bottom:10px;animation:scaleIn 0.3s ease-out">🙏</div>
+            <p class="success" style="font-weight:600;font-size:0.85rem">Thank you!</p>
+            <p class="dim" style="margin-top:6px;font-size:0.7rem">Please take your card.</p>
+        </div>
     `);
     currentCard = null;
     currentCustomer = null;

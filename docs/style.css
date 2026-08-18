@@ -1,365 +1,229 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+    --bg: #f5f5f5;
+    --card: #ffffff;
+    --green: #16a34a;
+    --green-light: #22c55e;
+    --green-dark: #15803d;
+    --green-bg: #f0fdf4;
+    --green-glow: rgba(22,163,74,0.12);
+    --text: #1a1a1a;
+    --text-secondary: #666;
+    --text-dim: #999;
+    --border: #e5e5e5;
+    --red: #dc2626;
+    --red-bg: #fef2f2;
+    --amber: #d97706;
+    --amber-bg: #fffbeb;
+    --screen-bg: #0a0a0a;
+    --screen-text: #4ade80;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #1a1a2e;
-    color: #e0e0e0;
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    padding: 20px;
+    padding: 12px;
 }
 
-.page {
-    max-width: 900px;
-    width: 100%;
-}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+@keyframes cashSlide { 0% { transform: translateY(-8px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
 
-header {
-    text-align: center;
-    padding: 20px 0;
-}
+.page { max-width: 380px; width: 100%; animation: fadeIn 0.5s ease-out; }
 
+header { text-align: center; padding: 8px 0 12px; }
 header h1 {
-    font-size: 2rem;
-    color: #00d4ff;
-    letter-spacing: 2px;
+    font-size: 1.1rem; font-weight: 700; color: var(--green);
+    display: flex; align-items: center; justify-content: center; gap: 6px;
 }
+header p { color: var(--text-dim); font-size: 0.7rem; margin-top: 2px; }
 
-header p {
-    color: #888;
-    font-size: 0.9rem;
-    margin-top: 4px;
-}
-
-/* ATM Machine */
 .atm-machine {
-    background: linear-gradient(145deg, #2d2d44, #1f1f33);
-    border-radius: 20px;
-    padding: 30px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-    border: 1px solid #3a3a55;
+    background: var(--card);
+    border-radius: 16px;
+    padding: 14px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
 }
 
-/* Screen */
 .screen-bezel {
-    background: #111;
+    background: var(--screen-bg);
     border-radius: 12px;
-    padding: 8px;
-    border: 2px solid #333;
+    padding: 4px;
 }
 
 .screen {
-    background: #0a1628;
-    border-radius: 8px;
-    min-height: 380px;
-    padding: 20px;
-    font-family: 'Consolas', 'Courier New', monospace;
-    font-size: 0.95rem;
+    background: var(--screen-bg);
+    border-radius: 10px;
+    min-height: 280px;
+    padding: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
     line-height: 1.6;
-    color: #00ff88;
+    color: var(--screen-text);
     overflow-y: auto;
-    max-height: 380px;
+    max-height: 280px;
+    animation: fadeIn 0.3s ease-out;
 }
+.screen::-webkit-scrollbar { width: 3px; }
+.screen::-webkit-scrollbar-thumb { background: rgba(74,222,128,0.2); border-radius: 3px; }
 
 .screen .title {
-    color: #00d4ff;
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin-bottom: 10px;
-    text-align: center;
-    border-bottom: 1px solid #1a3a2a;
-    padding-bottom: 8px;
+    color: var(--green-light); font-size: 0.9rem; font-weight: 600;
+    text-align: center; padding-bottom: 8px;
+    border-bottom: 1px solid rgba(74,222,128,0.1); margin-bottom: 10px;
 }
-
-.screen .info {
-    color: #aaa;
-}
-
-.screen .success {
-    color: #00ff88;
-}
-
-.screen .error {
-    color: #ff4444;
-}
-
-.screen .warning {
-    color: #ffaa00;
-}
-
-.screen .highlight {
-    color: #ffdd00;
-    font-weight: bold;
-}
-
-.screen .dim {
-    color: #555;
-}
-
-.screen .center {
-    text-align: center;
-}
-
-.screen .divider {
-    border: none;
-    border-top: 1px dashed #1a3a2a;
-    margin: 10px 0;
-}
+.screen .info { color: #aaa; }
+.screen .success { color: var(--green-light); }
+.screen .error { color: #f87171; }
+.screen .warning { color: #fbbf24; }
+.screen .highlight { color: #fbbf24; font-weight: 500; }
+.screen .dim { color: #555; }
+.screen .center { text-align: center; }
+.screen .divider { border: none; border-top: 1px solid rgba(74,222,128,0.1); margin: 10px 0; }
 
 .screen .menu-item {
-    padding: 6px 0;
-    cursor: pointer;
-    transition: color 0.2s;
+    padding: 6px 8px; margin: 2px 0; cursor: pointer;
+    border-radius: 6px; transition: all 0.2s;
+    border-left: 2px solid transparent;
 }
-
 .screen .menu-item:hover {
-    color: #00d4ff;
+    background: rgba(74,222,128,0.08);
+    border-left-color: var(--green);
+    padding-left: 12px;
 }
 
 .screen .btn {
-    display: inline-block;
-    padding: 8px 20px;
-    margin: 8px 4px;
-    background: #003d2a;
-    color: #00ff88;
-    border: 1px solid #00ff88;
-    border-radius: 6px;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 0.9rem;
-    transition: all 0.2s;
+    display: inline-block; padding: 7px 16px; margin: 4px;
+    background: rgba(74,222,128,0.1); color: var(--green-light);
+    border: 1px solid rgba(74,222,128,0.2); border-radius: 8px;
+    cursor: pointer; font-family: 'Inter', sans-serif; font-size: 0.75rem;
+    font-weight: 500; transition: all 0.2s;
 }
-
 .screen .btn:hover {
-    background: #00ff88;
-    color: #111;
+    background: var(--green); color: #0a0a0a;
+    box-shadow: 0 2px 12px rgba(34,197,94,0.3);
 }
+.screen .btn:active { transform: scale(0.95); }
+.screen .btn.danger { background: rgba(248,113,113,0.1); color: #f87171; border-color: rgba(248,113,113,0.2); }
+.screen .btn.danger:hover { background: #f87171; color: #fff; }
+.screen .btn.primary { background: rgba(74,222,128,0.1); color: var(--green-light); border-color: rgba(74,222,128,0.2); }
+.screen .btn.primary:hover { background: var(--green); color: #0a0a0a; }
 
-.screen .btn.danger {
-    background: #3d0000;
-    color: #ff4444;
-    border-color: #ff4444;
-}
-
-.screen .btn.danger:hover {
-    background: #ff4444;
-    color: #fff;
-}
-
-.screen .btn.primary {
-    background: #002d55;
-    color: #00d4ff;
-    border-color: #00d4ff;
-}
-
-.screen .btn.primary:hover {
-    background: #00d4ff;
-    color: #111;
-}
-
-.screen .input-line {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin: 8px 0;
-}
-
+.screen .input-line { display: flex; align-items: center; gap: 6px; margin: 8px 0; }
 .screen .input-display {
-    background: #0d1f15;
-    border: 1px solid #1a3a2a;
-    padding: 6px 12px;
-    border-radius: 4px;
-    min-width: 200px;
-    letter-spacing: 3px;
-    font-size: 1.1rem;
-    color: #00ff88;
+    background: rgba(74,222,128,0.05);
+    border: 1px solid rgba(74,222,128,0.12);
+    padding: 7px 10px; border-radius: 8px;
+    min-width: 160px; letter-spacing: 2px; font-size: 0.95rem;
+    color: var(--green-light);
 }
 
-/* Keypad */
 .atm-bottom {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 20px;
-    gap: 20px;
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 12px; gap: 12px;
 }
 
-.keypad {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.keypad-row {
-    display: flex;
-    gap: 6px;
-}
+.keypad { display: flex; flex-direction: column; gap: 5px; }
+.keypad-row { display: flex; gap: 5px; }
 
 .key {
-    width: 60px;
-    height: 48px;
-    background: linear-gradient(145deg, #3a3a55, #2a2a40);
-    color: #ddd;
-    border: 1px solid #4a4a65;
-    border-radius: 8px;
-    font-size: 1.1rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.15s;
+    width: 46px; height: 38px;
+    background: var(--bg); color: var(--text);
+    border: 1px solid var(--border); border-radius: 8px;
+    font-size: 0.85rem; font-weight: 600; font-family: 'Inter', sans-serif;
+    cursor: pointer; transition: all 0.15s;
 }
+.key:hover { background: var(--green-bg); border-color: var(--green); color: var(--green); }
+.key:active { transform: scale(0.92); background: var(--green); color: #fff; }
 
-.key:hover {
-    background: linear-gradient(145deg, #4a4a65, #3a3a55);
-    border-color: #00d4ff;
-}
-
-.key:active {
-    transform: scale(0.95);
-    background: #00d4ff;
-    color: #111;
-}
-
-/* Card & Cash Slots */
-.slot-area {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    align-items: center;
-}
+.slot-area { display: flex; flex-direction: column; gap: 8px; align-items: center; }
 
 .card-slot {
-    width: 200px;
-    height: 50px;
-    background: linear-gradient(145deg, #222, #1a1a1a);
-    border: 2px dashed #444;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s;
-    font-size: 0.85rem;
-    color: #888;
-    letter-spacing: 1px;
+    width: 150px; height: 40px;
+    background: var(--bg); border: 2px dashed var(--border);
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.3s;
+    font-size: 0.65rem; color: var(--text-dim); letter-spacing: 1px; font-weight: 500;
 }
-
 .card-slot:hover {
-    border-color: #00d4ff;
-    color: #00d4ff;
-    box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+    border-color: var(--green); color: var(--green);
+    box-shadow: 0 0 16px var(--green-glow);
 }
-
 .card-slot.inserted {
-    border-style: solid;
-    border-color: #00ff88;
-    background: linear-gradient(145deg, #003d2a, #002a1e);
-    color: #00ff88;
+    border-style: solid; border-color: var(--green);
+    background: var(--green-bg); color: var(--green);
+    animation: float 3s ease-in-out infinite;
 }
 
 .cash-slot {
-    width: 200px;
-    height: 30px;
-    background: #111;
-    border: 1px solid #333;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.75rem;
-    color: #555;
-    transition: all 0.3s;
+    width: 150px; height: 22px;
+    background: #1a1a1a; border: 1px solid #333;
+    border-radius: 4px; display: flex; align-items: center; justify-content: center;
+    font-size: 0.6rem; color: #555; transition: all 0.3s;
 }
+.cash-slot.dispensing { border-color: var(--amber); color: var(--amber); animation: pulse 0.6s infinite; }
 
-.cash-slot.dispensing {
-    border-color: #ffaa00;
-    color: #ffaa00;
-    animation: blink 0.5s infinite;
-}
-
-@keyframes blink {
-    50% { opacity: 0.5; }
-}
-
-/* Info Panel */
 .info-panel {
-    margin-top: 30px;
-    background: linear-gradient(145deg, #2d2d44, #1f1f33);
-    border-radius: 12px;
-    padding: 24px;
-    border: 1px solid #3a3a55;
+    margin-top: 12px;
+    background: var(--card); border-radius: 14px;
+    padding: 14px; border: 1px solid var(--border);
+    box-shadow: var(--shadow);
 }
-
 .info-panel h2 {
-    color: #00d4ff;
-    margin-bottom: 16px;
-    font-size: 1.2rem;
+    color: var(--text); font-size: 0.85rem; font-weight: 600;
+    margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
 }
+.info-panel h2::before { content: ''; width: 3px; height: 14px; background: var(--green); border-radius: 2px; }
 
 .accounts-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 12px;
+    grid-template-columns: 1fr;
+    gap: 8px;
 }
 
 .account-card {
-    background: #1a1a2e;
-    border: 1px solid #333;
-    border-radius: 8px;
-    padding: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+    background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 12px; display: flex; flex-direction: column; gap: 3px;
+    transition: all 0.2s;
 }
+.account-card:hover { border-color: var(--green); box-shadow: 0 2px 8px var(--green-glow); }
+.account-card strong { color: var(--text); font-size: 0.8rem; }
+.account-card span { color: var(--text-secondary); font-size: 0.72rem; font-family: 'JetBrains Mono', monospace; }
 
-.account-card strong {
-    color: #00d4ff;
-    font-size: 1rem;
-    margin-bottom: 4px;
-}
+.hint { margin-top: 10px; color: var(--text-dim); text-align: center; font-size: 0.72rem; }
 
-.account-card span {
-    color: #aaa;
-    font-size: 0.85rem;
-}
-
-.hint {
-    margin-top: 16px;
-    color: #888;
-    text-align: center;
-    font-size: 0.9rem;
-}
-
-/* Table in mini statement */
-.stmt-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.8rem;
-    margin: 8px 0;
-}
-
+.stmt-table { width: 100%; border-collapse: collapse; font-size: 0.68rem; margin: 6px 0; }
 .stmt-table th {
-    color: #00d4ff;
-    text-align: left;
-    padding: 4px 6px;
-    border-bottom: 1px solid #1a3a2a;
+    color: var(--green); text-align: left;
+    padding: 4px 5px; border-bottom: 1px solid var(--border); font-weight: 500;
+}
+.stmt-table td { padding: 4px 5px; border-bottom: 1px solid #f0f0f0; }
+
+@media (min-width: 500px) {
+    body { padding: 24px; align-items: center; }
+    .page { max-width: 400px; }
+    .atm-machine { padding: 18px; }
+    .screen { min-height: 300px; max-height: 300px; padding: 16px; font-size: 0.82rem; }
+    .key { width: 52px; height: 42px; font-size: 0.9rem; }
+    .card-slot { width: 170px; height: 44px; }
 }
 
-.stmt-table td {
-    padding: 4px 6px;
-    border-bottom: 1px solid #0d1f15;
-}
-
-/* Responsive */
-@media (max-width: 600px) {
-    .atm-machine { padding: 16px; }
-    .screen { min-height: 320px; padding: 14px; font-size: 0.85rem; }
-    .key { width: 50px; height: 42px; font-size: 1rem; }
-    .card-slot { width: 160px; }
-    .accounts-grid { grid-template-columns: 1fr; }
+@media (max-width: 360px) {
+    .page { max-width: 100%; }
+    .atm-machine { padding: 10px; border-radius: 12px; }
+    .screen { min-height: 250px; max-height: 250px; padding: 10px; font-size: 0.72rem; }
+    .key { width: 40px; height: 34px; font-size: 0.8rem; }
+    .card-slot { width: 130px; height: 36px; }
 }

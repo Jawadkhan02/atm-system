@@ -2,24 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ATM System</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏦</text></svg>">
 </head>
 <body>
     <div class="page">
         <header>
-            <h1>ATM System</h1>
+            <h1>🏦 ATM System</h1>
             <p>OOP Assignment - C++ to JavaScript</p>
         </header>
 
         <div class="atm-machine">
-            <div class="atm-top">
-                <div class="screen-bezel">
-                    <div id="screen" class="screen">
-                        <!-- Dynamic content rendered here -->
-                    </div>
-                </div>
+            <div class="screen-bezel">
+                <div id="screen" class="screen"></div>
             </div>
             <div class="atm-bottom">
                 <div class="keypad" id="keypad">
@@ -39,15 +36,13 @@
                         <button class="key" data-value="9">9</button>
                     </div>
                     <div class="keypad-row">
-                        <button class="key" data-value="clear">CLR</button>
+                        <button class="key" data-value="clear">C</button>
                         <button class="key" data-value="0">0</button>
-                        <button class="key" data-value="enter">ENT</button>
+                        <button class="key" data-value="enter">OK</button>
                     </div>
                 </div>
                 <div class="slot-area">
-                    <div class="card-slot" id="cardSlot">
-                        <span>INSERT CARD</span>
-                    </div>
+                    <div class="card-slot" id="cardSlot">INSERT CARD</div>
                     <div class="cash-slot" id="cashSlot"></div>
                 </div>
             </div>
@@ -73,10 +68,9 @@
                     <span>Current: Rs. 200,000</span>
                 </div>
             </div>
-            <p class="hint">Click <strong>INSERT CARD</strong> to start</p>
+            <p class="hint">Tap INSERT CARD to start</p>
         </div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
