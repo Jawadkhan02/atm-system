@@ -600,20 +600,59 @@ function doWithdraw() {
         const amount = parseFloat(val);
         if (isNaN(amount) || amount <= 0) { showError('Invalid amount.'); return; }
         try {
-            const txn = selectedAccount.withdraw(amount);
-            showCashDispensing(amount);
-            setTimeout(() => {
-                render(`
-                    <div class="title">Withdrawal Successful</div>
-                    <p>Amount: Rs. ${fmt(amount)}</p>
-                    <p>Transaction ID: ${txn.getTransactionId()}</p>
-                    <p>New Balance: <span class="highlight">Rs. ${fmt(selectedAccount.getBalance())}</span></p>
-                    <hr class="divider">
-                    <div style="margin-top:16px"><button class="btn" onclick="showMenu()">Back to Menu</button></div>
-                `);
-            }, 2000);
+            // Validate without executing
+            selectedAccount._checkActive();
+            selectedAccount._validateAmount(amount);
+            selectedAccount._resetDailyLimits();
+            if (amount < selectedAccount.getMinWithdrawal()) throw new Error('Minimum withdrawal is Rs. ' + selectedAccount.getMinWithdrawal() + '.');
+            if (amount > selectedAccount.getMaxWithdrawalPerTransaction()) throw new Error('Max withdrawal per transaction is Rs. ' + selectedAccount.getMaxWithdrawalPerTransaction() + '.');
+            const dLimit = selectedAccount.calculateWithdrawalLimit();
+            if (selectedAccount._dailyWithdrawn + amount > dLimit) throw new Error('Daily withdrawal limit exceeded.');
+            const fee = selectedAccount.withdrawalFee(amount);
+            const total = amount + fee;
+            if (selectedAccount._balance - total < selectedAccount.getMinimumBalance()) throw new Error('Insufficient balance.');
+            tempData.withdrawAmount = amount;
+            tempData.withdrawFee = fee;
+            tempData.withdrawTotal = total;
+            showWithdrawConfirm();
         } catch (e) { showError(e.message); }
     };
+}
+
+function showWithdrawConfirm() {
+    const amount = tempData.withdrawAmount;
+    const fee = tempData.withdrawFee;
+    const total = tempData.withdrawTotal;
+    render(`
+        <div class="title">Confirm Withdrawal</div>
+        <hr class="divider">
+        <p>Amount: Rs. ${fmt(amount)}</p>
+        <p>Fee:    Rs. ${fmt(fee)}</p>
+        <p style="margin-top:8px;font-size:1.1rem">Total Deducted: <span class="highlight">Rs. ${fmt(total)}</span></p>
+        <hr class="divider">
+        <div style="margin-top:16px">
+            <button class="btn" onclick="executeWithdraw()">Confirm</button>
+            <button class="btn danger" onclick="showMenu()">Cancel</button>
+        </div>
+    `);
+}
+
+function executeWithdraw() {
+    try {
+        const txn = selectedAccount.withdraw(tempData.withdrawAmount);
+        showCashDispensing(tempData.withdrawAmount);
+        setTimeout(() => {
+            render(`
+                <div class="title">Withdrawal Successful</div>
+                <p>Amount: Rs. ${fmt(tempData.withdrawAmount)}</p>
+                <p>Fee: Rs. ${fmt(tempData.withdrawFee)}</p>
+                <p>Transaction ID: ${txn.getTransactionId()}</p>
+                <p>New Balance: <span class="highlight">Rs. ${fmt(selectedAccount.getBalance())}</span></p>
+                <hr class="divider">
+                <div style="margin-top:16px"><button class="btn" onclick="showMenu()">Back to Menu</button></div>
+            `);
+        }, 2000);
+    } catch (e) { showError(e.message); }
 }
 
 function doTransfer() {
@@ -639,21 +678,63 @@ function doTransfer() {
             const amount = parseFloat(val);
             if (isNaN(amount) || amount <= 0) { showError('Invalid amount.'); return; }
             try {
-                const [sTxn, rTxn] = selectedAccount.transfer(amount, tempData.target);
-                render(`
-                    <div class="title">Transfer Successful</div>
-                    <p>Amount: Rs. ${fmt(amount)}</p>
-                    <p>From: ${selectedAccount.getAccountNumber()}</p>
-                    <p>To: ${tempData.target.getAccountNumber()}</p>
-                    <p>TXN (Sender): ${sTxn.getTransactionId()}</p>
-                    <p>TXN (Receiver): ${rTxn.getTransactionId()}</p>
-                    <p>Your New Balance: <span class="highlight">Rs. ${fmt(selectedAccount.getBalance())}</span></p>
-                    <hr class="divider">
-                    <div style="margin-top:16px"><button class="btn" onclick="showMenu()">Back to Menu</button></div>
-                `);
+                // Validate without executing (check limits, balance, etc.)
+                selectedAccount._checkActive();
+                tempData.target._checkActive();
+                selectedAccount._validateAmount(amount);
+                if (selectedAccount._accountNumber === tempData.target.getAccountNumber()) throw new Error('Cannot transfer to the same account.');
+                selectedAccount._resetDailyLimits();
+                const dLimit = selectedAccount.calculateTransferLimit();
+                if (selectedAccount._dailyTransferred + amount > dLimit) throw new Error('Daily transfer limit exceeded.');
+                const fee = selectedAccount.transferFee(amount);
+                const total = amount + fee;
+                if (selectedAccount._balance - total < selectedAccount.getMinimumBalance()) throw new Error('Insufficient balance.');
+                tempData.transferAmount = amount;
+                tempData.transferFee = fee;
+                tempData.transferTotal = total;
+                showTransferConfirm();
             } catch (e) { showError(e.message); }
         };
     });
+}
+
+function showTransferConfirm() {
+    const amount = tempData.transferAmount;
+    const fee = tempData.transferFee;
+    const total = tempData.transferTotal;
+    const target = tempData.target;
+    render(`
+        <div class="title">Confirm Transfer</div>
+        <p>Receiver: <span class="success">${target.getAccountHolder()}</span></p>
+        <p>Account: ${target.getAccountNumber()} (${target.accountType()})</p>
+        <hr class="divider">
+        <p>Amount: Rs. ${fmt(amount)}</p>
+        <p>Fee:    Rs. ${fmt(fee)}</p>
+        <p style="margin-top:8px;font-size:1.1rem">Total Deducted: <span class="highlight">Rs. ${fmt(total)}</span></p>
+        <hr class="divider">
+        <div style="margin-top:16px">
+            <button class="btn" onclick="executeTransfer()">Confirm</button>
+            <button class="btn danger" onclick="showMenu()">Cancel</button>
+        </div>
+    `);
+}
+
+function executeTransfer() {
+    try {
+        const [sTxn, rTxn] = selectedAccount.transfer(tempData.transferAmount, tempData.target);
+        render(`
+            <div class="title">Transfer Successful</div>
+            <p>Amount: Rs. ${fmt(tempData.transferAmount)}</p>
+            <p>Fee: Rs. ${fmt(tempData.transferFee)}</p>
+            <p>From: ${selectedAccount.getAccountNumber()}</p>
+            <p>To: ${tempData.target.getAccountNumber()}</p>
+            <p>TXN (Sender): ${sTxn.getTransactionId()}</p>
+            <p>TXN (Receiver): ${rTxn.getTransactionId()}</p>
+            <p>Your New Balance: <span class="highlight">Rs. ${fmt(selectedAccount.getBalance())}</span></p>
+            <hr class="divider">
+            <div style="margin-top:16px"><button class="btn" onclick="showMenu()">Back to Menu</button></div>
+        `);
+    } catch (e) { showError(e.message); }
 }
 
 function doChangePin() {
